@@ -22,7 +22,7 @@ stages:
   jobs:
   - job: BuildJob
     pool:
-      vmImage: 'ubuntu-latest' # Use 'ubuntu-latest' for Linux
+      name: 'Default'
     steps:
     - task: UseDotNet@2
       inputs:
@@ -71,7 +71,7 @@ stages:
   - deployment: DeployJob
     environment: 'Production'
     pool:
-      vmImage: 'ubuntu-latest'
+      name: 'Default'
     strategy:
       runOnce:
         deploy:
