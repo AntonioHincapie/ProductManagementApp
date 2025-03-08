@@ -39,7 +39,7 @@ stages:
             displayName: 'Build Project'
             inputs:
               command: 'build'
-              projects: 'ProducstManagementApp.csproj'
+              projects: 'ProductsManagementApp.csproj'
               arguments: '--configuration Release'
 
           - task: DotNetCoreCLI@2
