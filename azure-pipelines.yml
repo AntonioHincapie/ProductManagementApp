@@ -17,74 +17,74 @@ pr:
       - main
 
 stages:
-- stage: Build
-  displayName: Build and Test
-  jobs:
-  - job: BuildJob
-    pool:
-      name: 'Default'
-    steps:
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '8.x' 
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore Packages'
-      inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Build Project'
-      inputs:
-        command: 'build'
-        projects: '**/*.csproj'
-        arguments: '--configuration Release'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Run Unit Tests'
-      inputs:
-        command: 'test'
-        projects: '/ProductsManagementApp.Tests/ProductsManagementApp.csproj'
-        arguments: '--configuration Release'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Publish Project'
-      inputs:
-        command: 'publish'
-        projects: '**/*.csproj'
-        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: true
-
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact'
-      inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'drop'
-
-- stage: Deploy
-  displayName: Deploy to Azure
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  jobs:
-  - deployment: DeployJob
-    environment: 'Production'
-    pool:
-      name: 'Default'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadPipelineArtifact@2
+  - stage: Build
+    displayName: Build and Test
+    jobs:
+      - job: BuildJob
+        pool:
+          name: 'Default'
+        steps:
+          - task: UseDotNet@2
             inputs:
+              packageType: 'sdk'
+              version: '8.x'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore Packages'
+            inputs:
+              command: 'restore'
+              projects: '**/*.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build Project'
+            inputs:
+              command: 'build'
+              projects: 'ProducstManagementApp.csproj'
+              arguments: '--configuration Release'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Run Unit Tests'
+            inputs:
+              command: 'test'
+              projects: '/ProductsManagementApp.Tests/ProductsManagementApp.Tests.csproj'
+              arguments: '--configuration Release'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish Project'
+            inputs:
+              command: 'publish'
+              projects: '**/*.csproj'
+              arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+              zipAfterPublish: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Artifact'
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)'
               artifact: 'drop'
-              path: '$(Pipeline.Workspace)/drop'
 
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: 'Azure subscription 1(7878a76a-864f-4e5f-9d5c-2122fb741dd5)'
-              appType: 'webApp'
-              appName: 'Products_Manager_App'
-              package: '$(Pipeline.Workspace)/drop/**/*.zip'
-              deploymentMethod: 'auto'
+  - stage: Deploy
+    displayName: Deploy to Azure
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployJob
+        environment: 'Production'
+        pool:
+          name: 'Default'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadPipelineArtifact@2
+                  inputs:
+                    artifact: 'drop'
+                    path: '$(Pipeline.Workspace)/drop'
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: 'Azure subscription 1(7878a76a-864f-4e5f-9d5c-2122fb741dd5)'
+                    appType: 'webApp'
+                    appName: 'ProductsManagerApp'
+                    package: '$(Pipeline.Workspace)/drop/**/*.zip'
+                    deploymentMethod: 'auto'

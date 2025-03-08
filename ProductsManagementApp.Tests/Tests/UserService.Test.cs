@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 using MyApp.Data;
 using MyApp.Models;
 using MyApp.Services;
 using ProductsManagementApp.Configuration;
+using Xunit;
 
 namespace MyApp.Tests
 {

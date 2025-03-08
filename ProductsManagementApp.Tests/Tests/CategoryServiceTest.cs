@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApp.Data;
 using MyApp.Models;
 using MyApp.Services;
+using Xunit;
 
 namespace MyApp.Tests
 {
