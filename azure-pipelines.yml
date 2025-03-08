@@ -22,12 +22,12 @@ stages:
   jobs:
   - job: BuildJob
     pool:
-      vmImage: 'windows-latest' # Use 'ubuntu-latest' for Linux
+      vmImage: 'ubuntu-latest' # Use 'ubuntu-latest' for Linux
     steps:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '6.x' # Update to your .NET version
+        version: '8.x' 
 
     - task: DotNetCoreCLI@2
       displayName: 'Restore Packages'
@@ -55,7 +55,7 @@ stages:
         command: 'publish'
         projects: '**/*.csproj'
         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: true # Creates a ZIP file for deployment
+        zipAfterPublish: true
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact'
@@ -71,7 +71,7 @@ stages:
   - deployment: DeployJob
     environment: 'Production'
     pool:
-      vmImage: 'windows-latest'
+      vmImage: 'ubuntu-latest'
     strategy:
       runOnce:
         deploy:
