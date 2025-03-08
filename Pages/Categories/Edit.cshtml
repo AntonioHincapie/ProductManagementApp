@@ -1,0 +1,55 @@
+@page
+@model ProductsManagementApp.Pages.Categories.EditModel
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<h2>Edit Category</h2>
+
+<form id="editCategoryForm">
+    <input type="hidden" id="id">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryId = urlParams.get('id');
+
+        async function fetchCategory() {
+            const response = await fetch(`/api/Category/${categoryId}`, {
+                method: 'GET', credentials: 'include'
+            });
+            const category = await response.json();
+
+            document.getElementById('id').value = category.id;
+            document.getElementById('name').value = category.name;
+        }
+
+        document.getElementById('editCategoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const category = {
+                id: parseInt(document.getElementById('id').value),
+                name: document.getElementById('name').value,
+            };
+
+            const response = await fetch(`/api/Category/${category.id}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(category)
+            });
+
+            if (response.ok) {
+                window.location.href = '/Categories';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', fetchCategory);
+    </script>
+}

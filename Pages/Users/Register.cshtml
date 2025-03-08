@@ -1,0 +1,58 @@
+@page
+@model ProductsManagementApp.Pages.Users.RegisterModel
+@attribute [AllowAnonymous]
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+
+<form id="registerForm">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" required>
+    </div>
+    <div class="form-group">
+        <label for="role">Role</label>
+        @if (User.IsInRole("Admin"))
+        {
+            <select class="form-control" id="role" required>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+            </select>
+        }
+        else
+        {
+            <input type="text" class="form-control" id="role" value="User" readonly>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+
+            const response = await fetch('/api/User/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            });
+
+            if (response.ok) {
+                window.location.href = '/';
+            }
+        });
+    </script>
+}

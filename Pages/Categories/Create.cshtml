@@ -1,0 +1,46 @@
+@page
+@model ProductsManagementApp.Pages.Categories.CreateModel
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<h2>Create Category</h2>
+
+<form id="createCategoryForm">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('createCategoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const category = {
+                name: document.getElementById('name').value,
+            };
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            const response = await fetch('/api/Category', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(category)
+            });
+
+            if (response.ok) {
+                window.location.href = '/Categories';
+            }
+        });
+    </script>
+}

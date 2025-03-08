@@ -1,0 +1,77 @@
+@page
+@model ProductsManagementApp.Pages.Products.EditModel
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<h2>Edit Product</h2>
+
+<form id="editProductForm">
+    <input type="hidden" id="id">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" required>
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" step="0.01" class="form-control" id="price" required>
+    </div>
+    <div class="form-group">
+        <label for="categoryId">Category ID</label>
+        <select class="form-control" id="categoryId"></select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        async function fetchProduct() {
+            const response = await fetch(`/api/Product/${productId}`);
+            const product = await response.json();
+
+            document.getElementById('id').value = product.id;
+            document.getElementById('name').value = product.name;
+            document.getElementById('price').value = product.price;
+            
+            const categoriesResponse = await fetch('/api/Category');
+            const categories = await categoriesResponse.json();
+            const categorySelect = document.getElementById('categoryId');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                if (category.id === product.categoryId) {
+                    option.selected = true;
+                }
+                categorySelect.appendChild(option);
+            });
+        }
+
+        document.getElementById('editProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const product = {
+                id: parseInt(document.getElementById('id').value),
+                name: document.getElementById('name').value,
+                price: parseFloat(document.getElementById('price').value),
+                categoryId: parseInt(document.getElementById('categoryId').value)
+            };
+
+            const response = await fetch(`/api/Product/${product.id}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(product)
+            });
+
+            if (response.ok) {
+                window.location.href = '/Products';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', fetchProduct);
+    </script>
+}

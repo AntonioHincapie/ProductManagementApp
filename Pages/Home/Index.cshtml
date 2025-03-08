@@ -1,0 +1,37 @@
+﻿@page
+@model ProductsManagementApp.Pages.Home.IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Product Manager App</h1>
+    <p>Please select a module to manage:</p>
+
+    <div class="list-group">
+        <a href="/Products" class="list-group-item list-group-item-action">Manage Products</a>
+        <a href="/Categories" class="list-group-item list-group-item-action">Manage Categories</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Users" class="list-group-item list-group-item-action">Manage Users</a>
+        }
+        <button id="logoutButton" class="list-group-item list-group-item-action" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("logoutButton").addEventListener("click", async () => {
+            const response = await fetch("/api/Auth/logout", {
+                method: "POST",
+                credentials: "include"
+            })
+
+            if (response.ok) {
+                window.location.href = "/";
+            } else {
+                alert("An error occurred. Please try again.");
+            }
+        });
+    </script>
+}

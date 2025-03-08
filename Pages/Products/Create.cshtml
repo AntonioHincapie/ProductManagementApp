@@ -1,0 +1,61 @@
+@page
+@model ProductsManagementApp.Pages.Products.CreateModel
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<h2>Create Product</h2>
+
+<form id="createProductForm">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" required>
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" step="0.01" class="form-control" id="price" required>
+    </div>
+    <div class="form-group">
+        <label for="categoryId">Category ID</label>
+        <select class="form-control" id="categoryId" required>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const categoriesResponse = await fetch('/api/Category');
+            const categories = await categoriesResponse.json();
+
+            const categorySelect = document.getElementById('categoryId');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+
+            document.getElementById('createProductForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const product = {
+                    name: document.getElementById('name').value,
+                    price: parseFloat(document.getElementById('price').value),
+                    categoryId: parseInt(document.getElementById('categoryId').value)
+                };
+
+                const response = await fetch('/api/Product', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                });
+
+                if (response.ok) {
+                    window.location.href = '/Products';
+                }
+            });
+        });
+    </script>
+}

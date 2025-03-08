@@ -1,0 +1,69 @@
+@page
+@model ProductsManagementApp.Pages.Categories.IndexModel
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h2>Categories</h2>
+<table id="categoriesTable" class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<a href="/Categories/Create" class="btn btn-primary">Create New Category</a>
+
+@section Scripts {
+    <script>
+        async function fetchCategories() {
+            const response = await fetch('/api/Category', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const data = await response.json();
+            const table = document.getElementById('categoriesTable').getElementsByTagName('tbody')[0];
+            table.innerHTML = ''; // Clear existing rows
+
+            data.forEach(category => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = category.id;
+                row.insertCell(1).textContent = category.name;
+
+                const actionsCell = row.insertCell(2);
+                const editLink = document.createElement('a');
+                editLink.href = `/Categories/Edit?id=${category.id}`;
+                editLink.textContent = 'Edit';
+                editLink.className = 'btn btn-secondary btn-sm me-2';
+
+                const detailLink = document.createElement('a');
+                detailLink.href = `/Categories/Details?id=${category.id}`;
+                detailLink.textContent = 'Details';
+                detailLink.className = 'btn btn-info btn-sm me-2';
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.className = 'btn btn-danger btn-sm';
+                deleteButton.onclick = () => deleteCategory(category.id);
+
+                actionsCell.appendChild(editLink);
+                actionsCell.appendChild(detailLink);
+                actionsCell.appendChild(deleteButton);
+            });
+        }
+
+        async function deleteCategory(id) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                await fetch(`/api/Category/${id}`, { method: 'DELETE', credentials: 'include' });
+                fetchCategories(); // Refresh the list
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchCategories);
+    </script>
+}
