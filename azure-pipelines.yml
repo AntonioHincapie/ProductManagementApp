@@ -84,7 +84,6 @@ stages:
                 - task: AzureWebApp@1
                   inputs:
                     azureSubscription: 'Azure subscription 1(7878a76a-864f-4e5f-9d5c-2122fb741dd5)'
-                    appType: 'webApp'
-                    appName: 'ProductsManagerApp'
+                    appType: 'webAppLinux'
+                    appName: 'ProductManagerApp'
                     package: '$(Pipeline.Workspace)/drop/**/*.zip'
-                    deploymentMethod: 'auto'
